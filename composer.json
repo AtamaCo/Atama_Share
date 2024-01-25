@@ -1,0 +1,22 @@
+{
+    "name": "atama/module-share",
+    "description": "A tool for aiding in the sharing of session state between headless and head-full Magento",
+    "type": "magento2-module",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Mage2Gen",
+            "email": "info@mage2gen.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Atama\\Share\\": ""
+        }
+    }
+}

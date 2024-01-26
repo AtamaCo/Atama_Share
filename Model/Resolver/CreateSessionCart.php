@@ -18,6 +18,10 @@ use Magento\QuoteGraphQl\Model\Cart\CreateEmptyCartForCustomer;
 use Magento\QuoteGraphQl\Model\Cart\CreateEmptyCartForGuest;
 use Magento\Quote\Model\QuoteIdToMaskedQuoteIdInterface;
 use Magento\Quote\Model\GuestCart\GuestCartResolver;
+use Magento\Checkout\Model\Session;
+use Magento\Framework\Session\Config as SessionConfig;
+use Magento\Framework\Session\SessionManagerInterface;
+use \Psr\Log\LoggerInterface;
 
 class CreateSessionCart implements ResolverInterface
 {
@@ -47,26 +51,52 @@ class CreateSessionCart implements ResolverInterface
      */
     private $quoteIdToMaskedQuoteId;
 
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var SessionManagerInterface
+     */
+    private $sessionManager;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+
 
     /**
      * @param CreateEmptyCartForCustomer $createEmptyCartForCustomer
      * @param CreateEmptyCartForGuest $createEmptyCartForGuest
      * @param MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdToQuoteId
      * @param GuestCartResolver $guestCartResolver
+     * @param QuoteIdToMaskedQuoteIdInterface $quoteIdToMaskedQuoteId
+     * @param Session $session
+     * @param SessionManagerInterface $sessionManager
+     * @param LoggerInterface $logger
      */
     public function __construct(
         CreateEmptyCartForCustomer $createEmptyCartForCustomer,
         CreateEmptyCartForGuest $createEmptyCartForGuest,
         MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdToQuoteId,
         GuestCartResolver $guestCartResolver,
-        QuoteIdToMaskedQuoteIdInterface $quoteIdToMaskedQuoteId
+        QuoteIdToMaskedQuoteIdInterface $quoteIdToMaskedQuoteId,
+        Session $session,
+        SessionManagerInterface $sessionManager,
+        LoggerInterface $logger
     ) {
         $this->createEmptyCartForCustomer = $createEmptyCartForCustomer;
         $this->createEmptyCartForGuest = $createEmptyCartForGuest;
         $this->maskedQuoteIdToQuoteId = $maskedQuoteIdToQuoteId;
         $this->guestCartResolver = $guestCartResolver;
         $this->quoteIdToMaskedQuoteId = $quoteIdToMaskedQuoteId;
+        $this->session = $session;
+        $this->sessionManager = $sessionManager;
+        $this->logger = $logger;
     }
+
 
     /**
      * @inheritdoc
@@ -75,17 +105,21 @@ class CreateSessionCart implements ResolverInterface
     {
         $customerId = $context->getUserId();
 
+        $this->logger->debug("COOL@@@");
         $predefinedMaskedQuoteId = null;
         if (isset($args['input']['cart_id'])) {
             $predefinedMaskedQuoteId = $args['input']['cart_id'];
             $this->validateMaskedId($predefinedMaskedQuoteId);
         }
 
-
         if (0 === $customerId || null === $customerId) {
-            $guestCart = $this->guestCartResolver->resolve($predefinedMaskedQuoteId);
-            $guestQuoteId = is_numeric($guestCart->getId()) && is_int(intval($guestCart->getId())) ? intval($guestCart->getId()) : null;
-
+            $candidateQuoteId = $this->session->getQuoteId();
+            $guestQuote = $this->guestCartResolver->resolve($predefinedMaskedQuoteId);
+            $guestQuoteId = is_numeric($guestQuote->getId()) && is_int(intval($guestQuote->getId())) ? intval($guestQuote->getId()) : null;
+            $this->session->setQuoteId($guestQuote->getId());
+            $this->session->setCartWasUpdated(true);
+            $this->sessionManager->writeClose();
+            session_write_close();
             return $this->quoteIdToMaskedQuoteId->execute($guestQuoteId);
         }
 

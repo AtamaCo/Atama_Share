@@ -17,15 +17,6 @@ The PHP session lifetime isn't something we will know in JavaScript, the PHP ses
 * Extend Magento to add sessionCart
 
 ```mermaid
-%%{
-  init: {
-    "sequence": {      
-      "noteFontWeight": "bolder",
-      "noteAlign": "left",
-      "messageAlign": "center"
-    }
-  }
-}%% 
 sequenceDiagram
     participant B as Shoppers's Browser
     participant M as Adobe Commerce

@@ -1,17 +1,20 @@
 
 type Mutation {
+     createSessionCart(input: createEmptyCartInput @doc(description: "An optional input object that assigns the specified ID to the cart.")): String @resolver( class: "Atama\\Share\\Model\\Resolver\\CreateSessionCart") @doc(description: "Input Create a customer or guest cart associated with the current session.")
+}
 
-    createSessionGuestCart: Atamaexample2 @resolver( class: "Atama\\Share\\Model\\Resolver\\CreateSessionGuestCart") @doc(description: "Input Create a guest cart associated with the current session cookie.")
-    createSessionCart(input: createEmptyCartInput @doc(description: "An optional input object that assigns the specified ID to the cart.")): String @resolver( class: "Atama\\Share\\Model\\Resolver\\CreateSessionCart") @doc(description: "Input Create a customer or guest cart associated with the current session.")
+type Query {
+    sessionCart: SessionCart! @resolver (class: "Atama\\Share\\Model\\Resolver\\SessionCart") @doc(description:"Get current session cart information.") @cache(cacheable: false)
+}
+
+
+type SessionCart {
+    cart_id  : String  @doc(description: "Current session's masked cart ID")
+    registered_customer: Boolean @doc(description: "Is the current session for a logged in registered customer?")
+    total_quantity: Int @doc(description: "Total quantity in cart")
 }
 
 type CreateSessionGuestCartInput {
 
     id  : String  @doc(description: "Input id.")
-}
-
-type Atamaexample2 {
-
-    id  : String  @doc(description: "Query by id.")
-    code  : String  @doc(description: "Query by code.")
 }

@@ -21,7 +21,7 @@ sequenceDiagram
         E->>B: aem.js<br>styles.css<br>...
         create participant M as Adobe Commerce        
         B->>M: <img src="/media/image.svg" ...>        
-        Note over M: no session cookie,<br>create new PHP session
+        Note over M: no session cookie,<br>create new PHP session.<br>IF session exists, refresh
         M->>B: image.svg<br>`Set-Cookie: PHPSESSID=abcdef123...`
         note over B: browser now has<br>Cookie: PHPSESSID=abcdef123...
         destroy E
@@ -35,10 +35,10 @@ sequenceDiagram
         note over B, M: fetch('/graphql' ... <br>#nbsp;#nbsp;#nbsp;type: "POST",<br>#nbsp;#nbsp;#nbsp;credentials: "include",<br>#nbsp;#nbsp;#nbsp;body: ...<br>#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;`mutation: { createSessionCart... <br><br>Cookie: PHPSESSID=abcdef123...
         M-->>M: load session data from redis / db<br>check if session is logged in customer<br>(it's not)<br>create new quote / cart
         note over M: An extension to Adobe Commerce<br>performs this task
-        M-->>M: associate quote id to session cookie
+        M-->>M: associate quote id to session
         M->>B: return masked cart id<br>29fljsslk239slkj29sslkajdslkjs920
         B->>M: graphql mutation to add item to cart
-        note over B, M: fetch('/graphql' ... <br>#nbsp;#nbsp;#nbsp;type: "POST",<br>#nbsp;#nbsp;#nbsp;credentials: "include",<br>#nbsp;#nbsp;#nbsp;body: ...<br>#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;`mutation: { addSimpleCartItem (cart_id: "29fljsslk239slkj29sslkajdslkjs920", sku: "machine"... <br><br>Cookie: PHPSESSID=abcdef123...
+        note over B, M: fetch('/graphql' ... <br>#nbsp;#nbsp;#nbsp;type: "POST",<br>#nbsp;#nbsp;#nbsp;body: ...<br>#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;`mutation: { addSimpleCartItem (cart_id: "29fljsslk239slkj29sslkajdslkjs920", sku: "machine"... <br><br>Note this approach does not require the session cookie be sent hopefully reducing performance concerns over session use
         note over M: the session is already associated with the cart id
         M->>B: return cart response
     end

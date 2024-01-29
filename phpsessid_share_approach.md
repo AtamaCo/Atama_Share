@@ -1,13 +1,4 @@
 ```mermaid
-%%{
-  init: {
-    "sequence": {      
-      "noteFontWeight": "bolder",
-      "noteAlign": "left",
-      "messageAlign": "center"
-    }
-  }
-}%%
 sequenceDiagram
     Title Guest Initial Load and Add to Cart 
     participant B as Customer's Browser

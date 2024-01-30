@@ -8,7 +8,6 @@
  - [Specifications](#markdown-header-specifications)
  - [Attributes](#markdown-header-attributes)
 
-Great.
 
 ## Main Functionalities
 A tool for aiding in the sharing of session state between headless and head-full Magento
@@ -36,6 +35,20 @@ A tool for aiding in the sharing of session state between headless and head-full
  - Flush the cache by running `php bin/magento cache:flush`
 
 
+#### Example composer.json config:
+
+```
+    ...
+    "repositories": [
+        ...,
+        {
+        "url": "https://github.com/AtamaCo/Atama_Share.git",
+        "type": "git"
+        }
+    ],
+    ...
+```
+
 ## Configuration
 
 
@@ -43,11 +56,9 @@ A tool for aiding in the sharing of session state between headless and head-full
 
 ## Specifications
 
- - Controller
-	- frontend > share/index/index
-
  - GraphQl Endpoint
-	- CreateSessionGuestCartInput
+	- CreateSessionCart
+    - SessionCart
 
 
 ## Attributes

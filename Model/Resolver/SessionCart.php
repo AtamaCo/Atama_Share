@@ -1,8 +1,4 @@
 <?php
-/**
- * Copyright ©  All rights reserved.
- * See COPYING.txt for license details.
- */
 declare(strict_types=1);
 
 namespace Atama\Share\Model\Resolver;
@@ -15,38 +11,21 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Quote\Model\Cart\CustomerCartResolver;
 use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
-use Magento\QuoteGraphQl\Model\Cart\CreateEmptyCartForCustomer;
-use Magento\QuoteGraphQl\Model\Cart\CreateEmptyCartForGuest;
 use Magento\Quote\Model\QuoteIdToMaskedQuoteIdInterface;
-use Magento\Quote\Model\GuestCart\GuestCartResolver;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Session\Config as SessionConfig;
-use Magento\Framework\Session\SessionManagerInterface;
 use Magento\QuoteGraphQl\Model\Cart\GetCartForUser;
 use \Psr\Log\LoggerInterface;
+use Magento\GraphQl\Model\Query\ContextInterface;
 
 class SessionCart implements ResolverInterface
 {
 
-    /**
-     * @var CreateEmptyCartForCustomer
-     */
-    private $createEmptyCartForCustomer;
-
-    /**
-     * @var CreateEmptyCartForGuest
-     */
-    private $createEmptyCartForGuest;
 
     /**
      * @var MaskedQuoteIdToQuoteIdInterface
      */
     private $maskedQuoteIdToQuoteId;
-
-    /**
-     * @var GuestCartResolver
-     */
-    private $guestCartResolver;
 
     /**
      * @var QuoteIdToMaskedQuoteIdInterface
@@ -58,10 +37,6 @@ class SessionCart implements ResolverInterface
      */
     private $session;
 
-    /**
-     * @var SessionManagerInterface
-     */
-    private $sessionManager;
     /**
      * @var LoggerInterface
      */
@@ -80,36 +55,24 @@ class SessionCart implements ResolverInterface
 
 
     /**
-     * @param CreateEmptyCartForCustomer $createEmptyCartForCustomer
-     * @param CreateEmptyCartForGuest $createEmptyCartForGuest
      * @param MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdToQuoteId
-     * @param GuestCartResolver $guestCartResolver
      * @param QuoteIdToMaskedQuoteIdInterface $quoteIdToMaskedQuoteId
      * @param Session $session
-     * @param SessionManagerInterface $sessionManager
      * @param LoggerInterface $logger
      * @param GetCartForUser $getCartForUser
      * @param CustomerCartResolver $customerCartResolver
      */
     public function __construct(
-        CreateEmptyCartForCustomer $createEmptyCartForCustomer,
-        CreateEmptyCartForGuest $createEmptyCartForGuest,
         MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdToQuoteId,
-        GuestCartResolver $guestCartResolver,
         QuoteIdToMaskedQuoteIdInterface $quoteIdToMaskedQuoteId,
         Session $session,
-        SessionManagerInterface $sessionManager,
         LoggerInterface $logger,
         GetCartForUser $getCartForUser,
         CustomerCartResolver $customerCartResolver
     ) {
-        $this->createEmptyCartForCustomer = $createEmptyCartForCustomer;
-        $this->createEmptyCartForGuest = $createEmptyCartForGuest;
         $this->maskedQuoteIdToQuoteId = $maskedQuoteIdToQuoteId;
-        $this->guestCartResolver = $guestCartResolver;
         $this->quoteIdToMaskedQuoteId = $quoteIdToMaskedQuoteId;
         $this->session = $session;
-        $this->sessionManager = $sessionManager;
         $this->logger = $logger;
         $this->getCartForUser = $getCartForUser;
         $this->customerCartResolver = $customerCartResolver;
@@ -128,10 +91,6 @@ class SessionCart implements ResolverInterface
         if (false === $context->getExtensionAttributes()->getIsCustomer()) {
             $guestQuoteId = $this->session->getQuoteId();
 
-            $this->logger->error($this->session->getSessionId());
-            $this->logger->error($this->sessionManager->getSessionId());
-            $this->logger->error($this->session->getQuoteId());
-            $this->logger->error(print_r($this->session->getData(), true));
             $cartId = null;
             $maskedCartId = null;
             if (is_numeric($guestQuoteId) && is_int(intval($guestQuoteId))) {

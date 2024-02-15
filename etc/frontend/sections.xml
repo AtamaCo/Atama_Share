@@ -4,4 +4,13 @@
     <action name="customer/account/logout">
         <section name="side-by-side"/>
     </action>
+    <action name="customer/ajax/login">
+        <section name="side-by-side"/>
+    </action>
+    <action name="rest/*/V1/carts/*/payment-information">
+        <section name="side-by-side"/>
+    </action>
+    <action name="rest/*/V1/guest-carts/*/payment-information">
+        <section name="side-by-side"/>
+    </action>
 </config>

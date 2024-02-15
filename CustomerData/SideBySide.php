@@ -173,7 +173,6 @@ class SideBySide implements SectionSourceInterface
             if (is_numeric($guestQuoteId) && is_int(intval($guestQuoteId))) {
                 $maskedCartId = $this->quoteIdToMaskedQuoteId->execute(intval($guestQuoteId));
             } else {
-//                $maskedCartId = $this->createEmptyCartForGuest->execute();
                 $guestQuote = $this->guestCartResolver->resolve();
                 $guestQuoteId = is_numeric($guestQuote->getId()) && is_int(intval($guestQuote->getId())) ? intval($guestQuote->getId()) : null;
                 $this->session->setQuoteId($guestQuote->getId());

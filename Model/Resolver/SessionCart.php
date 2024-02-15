@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Atama\Share\Model\Resolver;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlAlreadyExistsException;
@@ -21,6 +22,7 @@ use Magento\GraphQl\Model\Query\ContextInterface;
 class SessionCart implements ResolverInterface
 {
 
+    private const COOKIE_LIFETIME_CONFIG_PATH = 'web/cookie/cookie_lifetime';
 
     /**
      * @var MaskedQuoteIdToQuoteIdInterface
@@ -50,8 +52,10 @@ class SessionCart implements ResolverInterface
      * @var CustomerCartResolver
      */
     private $customerCartResolver;
-
-
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
 
 
     /**
@@ -61,6 +65,7 @@ class SessionCart implements ResolverInterface
      * @param LoggerInterface $logger
      * @param GetCartForUser $getCartForUser
      * @param CustomerCartResolver $customerCartResolver
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdToQuoteId,
@@ -68,7 +73,8 @@ class SessionCart implements ResolverInterface
         Session $session,
         LoggerInterface $logger,
         GetCartForUser $getCartForUser,
-        CustomerCartResolver $customerCartResolver
+        CustomerCartResolver $customerCartResolver,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->maskedQuoteIdToQuoteId = $maskedQuoteIdToQuoteId;
         $this->quoteIdToMaskedQuoteId = $quoteIdToMaskedQuoteId;
@@ -76,6 +82,7 @@ class SessionCart implements ResolverInterface
         $this->logger = $logger;
         $this->getCartForUser = $getCartForUser;
         $this->customerCartResolver = $customerCartResolver;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -101,7 +108,8 @@ class SessionCart implements ResolverInterface
             return [
                 "cart_id" => $maskedCartId,
                 "registered_customer" => false,
-                "total_quantity" => $cart ? $cart->getItemsQty() : 0
+                "total_quantity" => $cart ? $cart->getItemsQty() : 0,
+                "session_cookie_lifetime" => $this->getSessionLife()
             ];
         } else {
             $currentUserId = $context->getUserId();
@@ -110,10 +118,16 @@ class SessionCart implements ResolverInterface
             return [
                 "cart_id" => $maskedCartId,
                 "registered_customer" => true,
-                "total_quantity" => $cart->getItemsQty()
+                "total_quantity" => $cart->getItemsQty(),
+                "session_cookie_lifetime" => $this->getSessionLife()
             ];
         }
 
+    }
+
+    private function getSessionLife()
+    {
+        return $this->scopeConfig->getValue(self::COOKIE_LIFETIME_CONFIG_PATH);
     }
 
 }

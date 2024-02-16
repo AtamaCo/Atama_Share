@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+	<default>
+		<web>
+			<edge_delivery_service>
+				<side_by_side_token_route_enable>0</side_by_side_token_route_enable>
+				<side_by_side_create_cart_route_enable>0</side_by_side_create_cart_route_enable>
+				<side_by_side_section_token_enable>1</side_by_side_section_token_enable>
+				<side_by_side_section_create_cart_enable>1</side_by_side_section_create_cart_enable>
+			</edge_delivery_service>
+		</web>
+	</default>
+</config>

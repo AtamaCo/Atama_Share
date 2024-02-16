@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+	<system>
+		<section id="web" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+			<resource>Atama_Share::config_atama_share</resource>
+			<group id="edge_delivery_service" sortOrder="100" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+				<label>Edge Delivery Service Integration</label>
+				<field id="side_by_side_token_route_enable" type="select" sortOrder="10" showInWebsite="1" showInStore="0" showInDefault="1" translate="label">
+					<label>Token Exchange Route Enabled</label>
+                    <comment><![CDATA[Enable <em>/share/token</em> route for exchange of session for graphql customer bearer token.]]></comment>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+                <field id="side_by_side_create_cart_route_enable" type="select" sortOrder="10" showInWebsite="1" showInStore="0" showInDefault="1" translate="label">
+					<label>Session Cart Creation Route Enabled</label>
+                    <comment><![CDATA[Enable <em>/share/cart</em> route for creating a new cart if needed and associating with customer session.]]></comment>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+                <field id="side_by_side_section_token_enable" type="select" sortOrder="10" showInWebsite="1" showInStore="0" showInDefault="1" translate="label">
+                    <label>Enabled Side-By-Side Section Customer Token</label>
+                    <comment><![CDATA[If enabled, return a customer bearer token in custom <em>side-by-side</em> section for logged in customers.]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="side_by_side_section_create_cart_enable" type="select" sortOrder="10" showInWebsite="1" showInStore="0" showInDefault="1" translate="label">
+                    <label>Enabled Side-By-Side Section Create Cart</label>
+                    <comment><![CDATA[If enabled, guest and customer carts will be created when <em>side-by-side</em> custom section is fetched.]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+			</group>
+		</section>
+	</system>
+</config>

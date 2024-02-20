@@ -4,6 +4,7 @@
         <arguments>
             <argument name="sectionSourceMap" xsi:type="array">
                 <item name="side-by-side" xsi:type="string">Atama\Share\CustomerData\SideBySide</item>
+                <item name="premio-points" xsi:type="string">Atama\Share\CustomerData\PremioPoints</item>
             </argument>
         </arguments>
     </type>

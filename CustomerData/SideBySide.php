@@ -82,8 +82,8 @@ class SideBySide implements SectionSourceInterface
      * @param CurrentCustomer $currentCustomer
      * @param GuestCartResolver $guestCartResolver
      * @param CreateEmptyCartForCustomer $createEmptyCartForCustomer
-     * @param UserTokenParametersFactory|null $tokenParamsFactory
-     * @param UserTokenIssuerInterface|null $tokenIssuer
+     * @param UserTokenParametersFactory $tokenParamsFactory
+     * @param UserTokenIssuerInterface $tokenIssuer
      */
     public function __construct(
         QuoteIdToMaskedQuoteIdInterface $quoteIdToMaskedQuoteId,
@@ -94,8 +94,8 @@ class SideBySide implements SectionSourceInterface
         CreateEmptyCartForCustomer $createEmptyCartForCustomer,
         ?UserTokenParametersFactory $tokenParamsFactory = null,
         ?UserTokenIssuerInterface $tokenIssuer = null,
-        QuoteIdMaskFactory $quoteIdMaskFactory = null,
-        QuoteIdMaskResourceModel $quoteIdMaskResourceModel = null,
+        QuoteIdMaskFactory $quoteIdMaskFactory,
+        QuoteIdMaskResourceModel $quoteIdMaskResourceModel,
     ) {
         $this->quoteIdToMaskedQuoteId = $quoteIdToMaskedQuoteId;
         $this->session = $session;

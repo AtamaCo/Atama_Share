@@ -8,6 +8,7 @@ use Magento\Customer\CustomerData\SectionSourceInterface;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Integration\Api\UserTokenIssuerInterface;
 use Magento\Integration\Model\CustomUserContext;
 use Magento\Quote\Model\GuestCart\GuestCartResolver;
@@ -16,6 +17,8 @@ use Magento\Checkout\Model\Session;
 use Magento\Integration\Model\UserToken\UserTokenParametersFactory;
 use Magento\QuoteGraphQl\Model\Cart\CreateEmptyCartForCustomer;
 use Magento\GraphQl\Model\Query\ContextInterface;
+use Magento\Quote\Model\QuoteIdMaskFactory;
+use Magento\Quote\Model\ResourceModel\Quote\QuoteIdMask as QuoteIdMaskResourceModel;
 
 /**
  * Responsible for providing data for a new "side-by-side" customer data section.
@@ -61,6 +64,14 @@ class SideBySide implements SectionSourceInterface
      * @var UserTokenIssuerInterface
      */
     private $tokenIssuer;
+    /**
+     * @var QuoteIdMaskFactory
+     */
+    private $quoteIdMaskFactory;
+    /**
+     * @var QuoteIdMaskResourceModel
+     */
+    private $quoteIdMaskResourceModel;
 
 
 
@@ -83,6 +94,8 @@ class SideBySide implements SectionSourceInterface
         CreateEmptyCartForCustomer $createEmptyCartForCustomer,
         ?UserTokenParametersFactory $tokenParamsFactory = null,
         ?UserTokenIssuerInterface $tokenIssuer = null,
+        QuoteIdMaskFactory $quoteIdMaskFactory = null,
+        QuoteIdMaskResourceModel $quoteIdMaskResourceModel = null,
     ) {
         $this->quoteIdToMaskedQuoteId = $quoteIdToMaskedQuoteId;
         $this->session = $session;
@@ -93,6 +106,22 @@ class SideBySide implements SectionSourceInterface
         $this->tokenParametersFactory = $tokenParamsFactory
             ?? ObjectManager::getInstance()->get(UserTokenParametersFactory::class);
         $this->tokenIssuer = $tokenIssuer ?? ObjectManager::getInstance()->get(UserTokenIssuerInterface::class);
+        $this->quoteIdMaskFactory = $quoteIdMaskFactory ?? ObjectManager::getInstance()->get(QuoteIdMaskFactory::class);
+        $this->quoteIdMaskResourceModel = $quoteIdMaskResourceModel ?? ObjectManager::getInstance()->get(QuoteIdMaskResourceModel::class);
+    }
+
+    private function ensureQuoteMaskIdExist(int $quoteId): void
+    {
+        try {
+            $maskedId = $this->quoteIdToMaskedQuoteId->execute($quoteId);
+        } catch (NoSuchEntityException $e) {
+            $maskedId = '';
+        }
+        if ($maskedId === '') {
+            $quoteIdMask = $this->quoteIdMaskFactory->create();
+            $quoteIdMask->setQuoteId($quoteId);
+            $this->quoteIdMaskResourceModel->save($quoteIdMask);
+        }
     }
 
     /**
@@ -127,6 +156,7 @@ class SideBySide implements SectionSourceInterface
 
             $maskedCartId = null;
             if ($this->session->getQuoteId() !== null && $this->session->getQuoteId() !== 0) {
+                $this->ensureQuoteMaskIdExist(intval($this->session->getQuoteId()));
                 $maskedCartId = $this->quoteIdToMaskedQuoteId->execute(intval($this->session->getQuoteId()));
             } else if ($this->isCartCreationEnabled()) {
                 $maskedCartId = $this->createEmptyCartForCustomer->execute($currentCustomerId);

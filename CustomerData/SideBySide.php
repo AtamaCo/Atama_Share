@@ -57,14 +57,6 @@ class SideBySide implements SectionSourceInterface
      */
     private $createEmptyCartForCustomer;
     /**
-     * @var UserTokenParametersFactory
-     */
-    private $tokenParametersFactory;
-    /**
-     * @var UserTokenIssuerInterface
-     */
-    private $tokenIssuer;
-    /**
      * @var QuoteIdMaskFactory
      */
     private $quoteIdMaskFactory;
@@ -72,7 +64,14 @@ class SideBySide implements SectionSourceInterface
      * @var QuoteIdMaskResourceModel
      */
     private $quoteIdMaskResourceModel;
-
+    /**
+     * @var UserTokenParametersFactory
+     */
+    private $tokenParametersFactory;
+    /**
+     * @var UserTokenIssuerInterface
+     */
+    private $tokenIssuer;
 
 
     /**
@@ -92,10 +91,10 @@ class SideBySide implements SectionSourceInterface
         CurrentCustomer $currentCustomer,
         GuestCartResolver $guestCartResolver,
         CreateEmptyCartForCustomer $createEmptyCartForCustomer,
-        ?UserTokenParametersFactory $tokenParamsFactory = null,
-        ?UserTokenIssuerInterface $tokenIssuer = null,
         QuoteIdMaskFactory $quoteIdMaskFactory,
         QuoteIdMaskResourceModel $quoteIdMaskResourceModel,
+        ?UserTokenParametersFactory $tokenParamsFactory = null,
+        ?UserTokenIssuerInterface $tokenIssuer = null,
     ) {
         $this->quoteIdToMaskedQuoteId = $quoteIdToMaskedQuoteId;
         $this->session = $session;
